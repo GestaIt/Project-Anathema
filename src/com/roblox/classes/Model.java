@@ -1,6 +1,5 @@
 package com.roblox.classes;
 
-import com.company.Options;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.roblox.requests.Resources;
@@ -11,8 +10,7 @@ import java.io.IOException;
 
 @SuppressWarnings("unused")
 public class Model {
-    private final Options options = new Options();
-    private final Resources resources = new Resources(options.readProperty("RobloxCookie"));
+    private final Resources resources = new Resources("");
     private final String assetId;
     private final String creatorId;
     private final String productId;
@@ -34,8 +32,7 @@ public class Model {
                 this.creatorId);
 
         RobloxRequests.PurchaseAsset purchaseAsset = resources.getRetrofit().create(RobloxRequests.PurchaseAsset.class);
-        Call<String> purchaseResponse = purchaseAsset.purchase(this.productId, body,
-                options.readProperty("RobloxCookie"), resources.getCrossReference());
+        Call<String> purchaseResponse = purchaseAsset.purchase(this.productId, body, "", resources.getCrossReference());
 
         return purchaseResponse.execute().code();
     }
@@ -44,8 +41,7 @@ public class Model {
         String body = String.format("assetId=%s", this.assetId);
 
         RobloxRequests.DeleteAsset deleteAsset = resources.getRetrofit().create(RobloxRequests.DeleteAsset.class);
-        Call<String> deleteResponse = deleteAsset.delete(body,
-                options.readProperty("RobloxCookie"), resources.getCrossReference());
+        Call<String> deleteResponse = deleteAsset.delete(body, "", resources.getCrossReference());
 
         return deleteResponse.execute().code();
     }
@@ -54,8 +50,7 @@ public class Model {
         String body = String.format("itemTargetId=%s&favoriteType=Asset", this.assetId);
 
         RobloxRequests.ToggleFavorite deleteAsset = resources.getRetrofit().create(RobloxRequests.ToggleFavorite.class);
-        Call<String> deleteResponse = deleteAsset.toggleFavorite(body,
-                options.readProperty("RobloxCookie"), resources.getCrossReference());
+        Call<String> deleteResponse = deleteAsset.toggleFavorite(body, "", resources.getCrossReference());
 
         return deleteResponse.execute().code();
     }
@@ -64,8 +59,8 @@ public class Model {
         String body = String.format("itemTargetId=%s&favoriteType=Asset", this.assetId);
 
         RobloxRequests.LikeAsset likeAsset = resources.getRetrofit().create(RobloxRequests.LikeAsset.class);
-        Call<String> likeResponse = likeAsset.like(this.assetId, "true", body,
-                options.readProperty("RobloxCookie"), resources.getCrossReference());
+        Call<String> likeResponse = likeAsset.like(this.assetId, "true", body, "",
+                resources.getCrossReference());
 
         return likeResponse.execute().code();
     }
@@ -74,13 +69,13 @@ public class Model {
         String body = String.format("itemTargetId=%s&favoriteType=Asset", this.assetId);
 
         RobloxRequests.LikeAsset dislikeAsset = resources.getRetrofit().create(RobloxRequests.LikeAsset.class);
-        Call<String> dislikeResponse = dislikeAsset.like(this.assetId, "false", body,
-                options.readProperty("RobloxCookie"),
+        Call<String> dislikeResponse = dislikeAsset.like(this.assetId, "false", body, "",
                 resources.getCrossReference());
 
         return dislikeResponse.execute().code();
     }
 
+    @SuppressWarnings("unused")
     public String getAssetId() {
         return this.assetId;
     }
