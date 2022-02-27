@@ -1,5 +1,6 @@
 package com.roblox.misc;
 
-public record AdditionalExtensions() {
-
+@SuppressWarnings("unused")
+public class AdditionalExtensions {
+    public static String[] additionalExtensions = {"[New]", "[Rewritten]"};
 }

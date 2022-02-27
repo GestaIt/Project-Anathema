@@ -1,61 +1,72 @@
 package com.roblox.botting;
 
+import com.company.LocalFileReader;
+import com.company.Options;
+import com.google.common.collect.Iterables;
+import com.roblox.classes.Cookie;
+import com.roblox.classes.Model;
+import org.apache.commons.configuration.ConfigurationException;
+
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @SuppressWarnings("unused")
 public class Botter {
-    private Botters.BotterInterface botter;
-    private final String assetId;
+    private Method botter;
+    private final Options options = new Options();
     private final ArrayList<Thread> threadsList = new ArrayList<>();
-    private long threads;
-    private boolean running = true;
 
-    public Botter(Botters.BotterInterface botter, String assetId, long threads) {
+    public Botter(Method botter, String assetId, int objectsPerChunk) throws IOException, ConfigurationException, InterruptedException {
         this.botter = botter;
-        this.assetId = assetId;
-        this.threads = threads;
-    }
 
-    public Botter(Botters.BotterInterface botter, String assetId, long threads, boolean running) {
-        this.botter = botter;
-        this.assetId = assetId;
-        this.threads = threads;
-        this.running = running;
-    }
+        Botters botters = new Botters();
 
-    public void setThreads(long threads) {
-        if(threads >= this.threads) { // if the new amount of threads is greater, we must create new threads
-            for(long i = this.threads; i <= threads; i++) {
-                this.threads++;
+        List<Cookie> cookies = new ArrayList<>();
+        LocalFileReader cookiesFile = new LocalFileReader("\\cookies.txt");
+        cookiesFile.readLines().forEach((cookieString) -> cookies.add(new Cookie(cookieString)));
+        LocalFileReader proxiesFile = new LocalFileReader("\\proxies.txt");
+        ArrayList<String> proxies = new ArrayList<>(proxiesFile.readLines());
 
-                Thread newThread = new Thread(() -> {
-                    try {
-                        botter.bot(this.assetId);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+        Iterable<List<Cookie>> cookiePartitions = Iterables.partition(cookies, objectsPerChunk);
+        Iterable<List<String>> proxyPartitions = Iterables.partition(proxies, objectsPerChunk);
 
-                threadsList.add(newThread);
-            }
-        } else {
-            for(long i = this.threads; i >= threads; i--) {
-                this.threads--;
+        AtomicLong purchases = new AtomicLong();
+        Model model = new Model(assetId);
 
-                Thread currentThread = threadsList.get((int) i);
-                currentThread.stop();
+        for(int i = 0; i < Iterables.size(cookiePartitions); i++) {
+            List<Cookie> cookiePartition = Iterables.get(cookiePartitions, Math.min(i,
+                    Iterables.size(cookiePartitions)-1));
+            List<String> proxyPartition = Iterables.get(proxyPartitions, Math.min(i,
+                    Iterables.size(proxyPartitions)-1));
 
-                threadsList.remove((int) i);
-            }
+            Thread newThread = new Thread(() -> {
+                try {
+                    botter.invoke(botters, model, cookiePartition, proxyPartition,
+                            Long.parseLong(options.readProperty("SalesThreshold")), purchases);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            threadsList.add(newThread);
+            newThread.start();
         }
+
+        while(!this.threadsList.get(0).isInterrupted())
+            TimeUnit.SECONDS.sleep(3);
     }
 
-    public void setRunning(boolean running) {
-        this.running = running;
+    public void stop() {
+        threadsList.forEach(Thread::interrupt);
     }
 
-    public void setBotter(Botters.BotterInterface botter) {
+    public void setBotter(Method botter) {
         this.botter = botter;
+        threadsList.forEach(Thread::interrupt);
     }
 }

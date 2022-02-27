@@ -23,12 +23,13 @@ public class RobloxRequests {
     }
 
     public interface AssetInformation {
-        @GET("https://api.roblox.com/marketplace/productinfo?assetId={assetId}")
-        Call<String> information(@Path("assetId") String assetId);
+        @GET("https://api.roblox.com/marketplace/productinfo")
+        Call<String> information(@Query("assetId") String assetId);
     }
 
     public interface PurchaseAsset {
         @POST("https://economy.roblox.com/v1/purchases/products/{productId}")
+        @Headers("Content-Type: application/json; charset=UTF-8")
         Call<String> purchase(@Path("productId") String productId, @Body String body,
                               @Header("Cookie") String robloxCookie, @Header("X-CSRF-TOKEN") String crossReferenceToken);
     }
@@ -62,9 +63,20 @@ public class RobloxRequests {
                             @Header("Cookie") String robloxCookie, @Header("X-CSRF-TOKEN") String crossReferenceToken);
     }
 
+    public interface UploadLua {
+        @POST("https://data.roblox.com/Data/Upload.ashx?json=1&assetid=0&type=Lua&genreTypeId=1&ispublic=true" +
+                "&allowComments=false")
+        @Headers({"Content-Type: application/xml", "User-Agent: Roblox/WinInet"})
+        Call<String> upload(@Query("name") String name, @Query("description") String description,
+                            @Query("groupId") String groupId, @Body String assetInfo,
+                            @Header("Cookie") String robloxCookie, @Header("X-CSRF-TOKEN") String crossReferenceToken);
+    }
+
     public interface GetAssetLocation {
         @GET("https://assetdelivery.roblox.com/v1/assetId/{assetId}")
         Call<String> location(@Path("assetId") String assetId);
+        @GET("https://assetdelivery.roblox.com/v1/assetId/{assetId}")
+        Call<String> location(@Path("assetId") String assetId, @Header("Cookie") String robloxCookie);
     }
 
     public interface GetAssetInformation {

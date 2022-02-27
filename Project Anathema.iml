@@ -19,5 +19,7 @@
     <orderEntry type="library" name="squareup.retrofit2.retrofit" level="project" />
     <orderEntry type="library" name="squareup.retrofit2.converter.gson" level="project" />
     <orderEntry type="library" name="squareup.retrofit2.converter.scalars" level="project" />
+    <orderEntry type="library" name="google.guava" level="project" />
+    <orderEntry type="library" name="commons.configuration" level="project" />
   </component>
 </module>
